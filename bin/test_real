@@ -1,0 +1,88 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "bundler/setup"
+require "agents_skill_vault"
+
+def usage
+  puts "Usage: bin/test_real <storage_path> [github_url...]"
+  puts ""
+  puts "Examples:"
+  puts "  bin/test_real ~/.test_vault"
+  puts "  bin/test_real ~/.test_vault https://github.com/rails/rails"
+  puts "  bin/test_real ~/.test_vault https://github.com/user/repo/tree/main/folder"
+  exit 1
+end
+
+usage if ARGV.empty?
+
+storage_path = ARGV[0]
+urls = ARGV[1..]
+
+puts "=" * 60
+puts "Testing AgentsSkillVault"
+puts "=" * 60
+puts "Storage path: #{storage_path}"
+puts ""
+
+begin
+  vault = AgentsSkillVault::Vault.new(storage_path: storage_path)
+  puts "✓ Vault created/loaded"
+  puts ""
+
+  if urls.any?
+    puts "Adding #{urls.size} resource(s)..."
+    puts "-" * 60
+
+    urls.each do |url|
+      resource = vault.add(url)
+      puts "✓ Added: #{resource.label}"
+    rescue AgentsSkillVault::Error => e
+      puts "✗ Failed to add #{url}: #{e.message}"
+    end
+    puts ""
+  end
+
+  puts "Current resources in vault:"
+  puts "-" * 60
+  resources = vault.list
+
+  if resources.empty?
+    puts "(none)"
+  else
+    resources.each do |resource|
+      puts "  #{resource.label}"
+      puts "    URL: #{resource.url}"
+      puts "    Type: #{resource.type}"
+      puts "    Local: #{resource.local_path}"
+      puts "    Added: #{resource.added_at}"
+      puts "    Synced: #{resource.synced_at}"
+      puts ""
+    end
+  end
+
+  if resources.any?
+    puts "Syncing all resources..."
+    puts "-" * 60
+
+    results = vault.sync_all
+    results.each do |label, result|
+      if result.success?
+        status = result.changes? ? "Updated" : "No changes"
+        puts "✓ #{label}: #{status}"
+      else
+        puts "✗ #{label}: #{result.error}"
+      end
+    end
+    puts ""
+  end
+
+  puts "=" * 60
+  puts "Test complete"
+  puts "Vault location: #{storage_path}"
+  puts "Manifest: #{File.join(storage_path, "manifest.json")}"
+  puts "=" * 60
+rescue AgentsSkillVault::Error => e
+  puts "Error: #{e.message}"
+  exit 1
+end

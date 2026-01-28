@@ -1,0 +1,29 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "json"
+
+def usage
+  puts "Usage: bin/query_manifest <vault_path>"
+  puts ""
+  puts "Shows the raw JSON content of the vault's manifest file."
+  puts ""
+  puts "Example:"
+  puts "  bin/query_manifest ~/.test_vault"
+  exit 1
+end
+
+usage if ARGV.empty?
+
+vault_path = ARGV[0]
+manifest_path = File.join(vault_path, "manifest.json")
+
+unless File.exist?(manifest_path)
+  puts "Error: Manifest file not found at #{manifest_path}"
+  exit 1
+end
+
+content = File.read(manifest_path)
+data = JSON.parse(content)
+
+puts JSON.pretty_generate(data)
