@@ -1,6 +1,9 @@
 # AgentsSkillVault
 
-A Ruby gem for managing a local vault of GitHub resources. Clone entire repositories or specific folders, keep them synced, and query them by username or repository name.
+A Ruby gem for managing a local vault of GitHub resources that contains Agent Skill specifications. 
+Clone entire repositories or specific folders, keep them synced, and query them by username or repository name.
+
+Currently works only with Github. Future plans will include to support any Git based repository. 
 
 ## Overview
 
