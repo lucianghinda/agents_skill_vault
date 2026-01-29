@@ -82,7 +82,7 @@ module AgentsSkillVault
       def label
         if type == :repo
           "#{username}/#{repo}"
-        elsif is_skill_file?
+        elsif skill_file?
           "#{username}/#{repo}/#{skill_name}"
         else
           parts = relative_path&.split("/") || []
@@ -95,7 +95,7 @@ module AgentsSkillVault
       #
       # @return [Boolean] true if this is a SKILL.md file URL
       #
-      def is_skill_file?
+      def skill_file?
         type == :file && skill_name && !skill_name.empty?
       end
     end
@@ -156,52 +156,81 @@ module AgentsSkillVault
     # @return [PathSegmentsData] Structured data with type, branch, and relative_path
     #
     private_class_method def self.parse_path_segments(segments)
-      if segments.length <= 2
-        return PathSegmentsData.new(type: :repo, branch: "main", relative_path: nil, skill_name: nil,
-                                    skill_folder_path: nil)
-      end
+      return default_path_data if segments.length <= 2
 
       case segments[2]
-      when "tree"
-        branch = segments[3] || "main"
-        path_parts = segments[4..] || []
-        if path_parts.empty?
-          PathSegmentsData.new(type: :repo, branch: branch, relative_path: nil, skill_name: nil, skill_folder_path: nil)
-        else
-          PathSegmentsData.new(type: :folder, branch: branch, relative_path: path_parts.join("/"), skill_name: nil,
-                               skill_folder_path: nil)
-        end
-      when "blob"
-        branch = segments[3] || "main"
-        path_parts = segments[4..] || []
-        relative_path = path_parts.join("/")
-
-        # Check if this is a SKILL.md file
-        filename = path_parts.last
-        if filename == "SKILL.md"
-          # Extract skill name from parent folder
-          if path_parts.length >= 2
-            skill_name = path_parts[-2]
-            skill_folder_path = path_parts[0..-2].join("/")
-          else
-            # SKILL.md is at root, use repo name as skill name
-            skill_name = segments[1]
-            skill_folder_path = "."
-          end
-
-          PathSegmentsData.new(
-            type: :file,
-            branch: branch,
-            relative_path:,
-            skill_name:,
-            skill_folder_path:
-          )
-        else
-          PathSegmentsData.new(type: :file, branch: branch, relative_path:, skill_name: nil, skill_folder_path: nil)
-        end
-      else
-        PathSegmentsData.new(type: :repo, branch: "main", relative_path: nil, skill_name: nil, skill_folder_path: nil)
+      when "tree" then parse_tree_segments(segments)
+      when "blob" then parse_blob_segments(segments)
+      else default_path_data
       end
+    end
+
+    # Returns the default PathSegmentsData for a repository URL.
+    #
+    # @return [PathSegmentsData] Default path data
+    #
+    private_class_method def self.default_path_data
+      PathSegmentsData.new(type: :repo, branch: "main", relative_path: nil, skill_name: nil, skill_folder_path: nil)
+    end
+
+    # Parses tree (folder) URL segments.
+    #
+    # @param segments [Array<String>] The split path segments
+    # @return [PathSegmentsData] Path data for tree URLs
+    #
+    private_class_method def self.parse_tree_segments(segments)
+      branch = segments[3] || "main"
+      path_parts = segments[4..] || []
+      if path_parts.empty?
+        PathSegmentsData.new(type: :repo, branch: branch, relative_path: nil, skill_name: nil, skill_folder_path: nil)
+      else
+        PathSegmentsData.new(type: :folder, branch: branch, relative_path: path_parts.join("/"), skill_name: nil,
+                             skill_folder_path: nil)
+      end
+    end
+
+    # Parses blob (file) URL segments.
+    #
+    # @param segments [Array<String>] The split path segments
+    # @return [PathSegmentsData] Path data for blob URLs
+    #
+    private_class_method def self.parse_blob_segments(segments)
+      branch = segments[3] || "main"
+      path_parts = segments[4..] || []
+      relative_path = path_parts.join("/")
+      filename = path_parts.last
+
+      if filename == "SKILL.md"
+        parse_skill_file_segments(segments, branch, path_parts, relative_path)
+      else
+        PathSegmentsData.new(type: :file, branch: branch, relative_path:, skill_name: nil, skill_folder_path: nil)
+      end
+    end
+
+    # Parses SKILL.md file segments to extract skill name and folder path.
+    #
+    # @param segments [Array<String>] The split path segments
+    # @param branch [String] Branch name
+    # @param path_parts [Array<String>] Path parts after branch
+    # @param relative_path [String] Full relative path
+    # @return [PathSegmentsData] Path data for SKILL.md files
+    #
+    private_class_method def self.parse_skill_file_segments(segments, branch, path_parts, relative_path)
+      if path_parts.length >= 2
+        skill_name = path_parts[-2]
+        skill_folder_path = path_parts[0..-2].join("/")
+      else
+        skill_name = segments[1]
+        skill_folder_path = "."
+      end
+
+      PathSegmentsData.new(
+        type: :file,
+        branch: branch,
+        relative_path:,
+        skill_name:,
+        skill_folder_path:
+      )
     end
   end
 end

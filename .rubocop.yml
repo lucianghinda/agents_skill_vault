@@ -21,6 +21,12 @@ Metrics/ParameterLists:
 
 Metrics/AbcSize:
   Max: 30
+  Exclude:
+    - "test/**/*"
+
+Layout/LineLength:
+  Exclude:
+    - "test/**/*"
 
 Metrics/CyclomaticComplexity:
   Max: 12
@@ -30,6 +36,18 @@ Metrics/PerceivedComplexity:
 
 Metrics/ClassLength:
   Max: 150
+  Exclude:
+    - "test/**/*"
+
+Metrics/ModuleLength:
+  Max: 250
+  Exclude:
+    - "test/**/*"
+
+Metrics/BlockLength:
+  Exclude:
+    - "test/**/*"
+    - "*.gemspec"
 
 Gemspec/DevelopmentDependencies:
   Enabled: false

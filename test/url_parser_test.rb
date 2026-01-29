@@ -206,7 +206,7 @@ class UrlParserTest < Minitest::Test
     assert_equal :file, result.type
     assert_equal "improving-testing", result.skill_name
     assert_equal "skills/improving-testing", result.skill_folder_path
-    assert result.is_skill_file?
+    assert result.skill_file?
     assert_equal "lucianghinda/agentic-skills/improving-testing", result.label
   end
 
@@ -222,7 +222,7 @@ class UrlParserTest < Minitest::Test
     assert_equal :file, result.type
     assert_nil result.skill_name
     assert_nil result.skill_folder_path
-    refute result.is_skill_file?
+    refute result.skill_file?
     assert_equal "user/repo/README.md", result.label
   end
 
@@ -238,7 +238,7 @@ class UrlParserTest < Minitest::Test
     assert_equal :file, result.type
     assert_equal "test-skill", result.skill_name
     assert_equal "deep/nested/skills/test-skill", result.skill_folder_path
-    assert result.is_skill_file?
+    assert result.skill_file?
     assert_equal "user/repo/test-skill", result.label
   end
 
@@ -255,7 +255,7 @@ class UrlParserTest < Minitest::Test
     # At root, parent folder is the repo name
     assert_equal "repo", result.skill_name
     assert_equal ".", result.skill_folder_path
-    assert result.is_skill_file?
+    assert result.skill_file?
     assert_equal "user/repo/repo", result.label
   end
 
@@ -270,7 +270,7 @@ class UrlParserTest < Minitest::Test
     assert_equal "skills/my-skill/SKILL.md", result.relative_path
     assert_equal "my-skill", result.skill_name
     assert_equal "skills/my-skill", result.skill_folder_path
-    assert result.is_skill_file?
+    assert result.skill_file?
     assert_equal "user/repo/my-skill", result.label
   end
 end

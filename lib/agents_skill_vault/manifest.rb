@@ -92,7 +92,7 @@ module AgentsSkillVault
     # @param resource [Resource] The resource with updated attributes
     # @return [Boolean] true if the resource was found and updated, false otherwise
     #
-    def update_resource(resource)
+    def update_resource(resource) # rubocop:disable Naming/PredicateMethod
       data = load
       data[:resources] ||= []
       index = data[:resources].find_index { |r| r[:label] == resource.label }
