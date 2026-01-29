@@ -62,29 +62,9 @@ module AgentsSkillVault
       parsed_data = parse_yaml(frontmatter, errors)
       return { valid: false, errors:, skill_data: {} } if parsed_data.nil?
 
-      # Validate required fields
-      validate_required_fields(parsed_data, errors)
+      validate_fields(parsed_data, errors)
 
-      # Validate name field
-      validate_name(parsed_data, errors) if parsed_data["name"]
-
-      # Validate description field
-      validate_description(parsed_data, errors) if parsed_data["description"]
-
-      # Validate optional fields if present
-      validate_optional_fields(parsed_data, errors)
-
-      # Build skill data hash
-      skill_data = {
-        name: parsed_data["name"],
-        description: parsed_data["description"],
-        license: parsed_data["license"],
-        compatibility: parsed_data["compatibility"],
-        metadata: parsed_data["metadata"],
-        allowed_tools: parsed_data["allowed-tools"]
-      }
-
-      { valid: errors.empty?, errors:, skill_data: }
+      { valid: errors.empty?, errors:, skill_data: build_skill_data(parsed_data) }
     end
 
     # Extracts YAML frontmatter from content.
@@ -144,7 +124,8 @@ module AgentsSkillVault
 
       return if name.match?(NAME_PATTERN)
 
-      errors << "Field 'name' must contain only lowercase letters, numbers, and hyphens (no consecutive or leading/trailing hyphens)"
+      errors << "Field 'name' must contain only lowercase letters, numbers, and hyphens " \
+                "(no consecutive or leading/trailing hyphens)"
     end
 
     # Validates the description field.
@@ -196,6 +177,34 @@ module AgentsSkillVault
       return if allowed_tools.is_a?(String)
 
       errors << "Field 'allowed-tools' must be a string"
+    end
+
+    # Validates all fields for the parsed data.
+    #
+    # @param data [Hash] Parsed YAML data
+    # @param errors [Array] Array to append errors to
+    #
+    def self.validate_fields(data, errors)
+      validate_required_fields(data, errors)
+      validate_name(data, errors) if data["name"]
+      validate_description(data, errors) if data["description"]
+      validate_optional_fields(data, errors)
+    end
+
+    # Builds skill data hash from parsed YAML.
+    #
+    # @param data [Hash] Parsed YAML data
+    # @return [Hash] Skill data with symbolized keys
+    #
+    def self.build_skill_data(data)
+      {
+        name: data["name"],
+        description: data["description"],
+        license: data["license"],
+        compatibility: data["compatibility"],
+        metadata: data["metadata"],
+        allowed_tools: data["allowed-tools"]
+      }
     end
   end
 end

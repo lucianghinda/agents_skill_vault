@@ -21,23 +21,23 @@ def section(title)
   puts "=" * 70
 end
 
-def print_resource(r)
-  status_sym = r.validation_status.to_s.upcase
-  status_color = case r.validation_status
+def print_resource(resource)
+  status_sym = resource.validation_status.to_s.upcase
+  status_color = case resource.validation_status
                  when :valid_skill then "✓"
                  when :invalid_skill then "✗"
                  when :not_a_skill then "○"
                  else "?"
                  end
 
-  puts "  #{status_color} #{r.label}"
-  puts "     Type: #{r.type}, URL: #{r.url}"
-  puts "     Local: #{r.local_path}"
-  puts "     Skill: #{r.skill_name || "N/A"}"
+  puts "  #{status_color} #{resource.label}"
+  puts "     Type: #{resource.type}, URL: #{resource.url}"
+  puts "     Local: #{resource.local_path}"
+  puts "     Skill: #{resource.skill_name || "N/A"}"
   puts "     Status: #{status_sym}"
-  return unless r.validation_errors.any?
+  return unless resource.validation_errors.any?
 
-  puts "     Errors: #{r.validation_errors.empty? ? "None" : r.validation_errors.join(", ")}"
+  puts "     Errors: #{resource.validation_errors.empty? ? "None" : resource.validation_errors.join(", ")}"
 end
 
 def print_sync_result(label, result)
