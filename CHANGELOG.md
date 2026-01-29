@@ -1,5 +1,3 @@
-## [Unreleased]
-
 ## [0.2.0] - 2026-01-29
 
 ### Breaking Changes
@@ -27,8 +25,6 @@
 - All methods under 20 lines (excl. tests)
 - All classes under 150 lines (excl. tests)
 - Reduced parameter counts to meet style guidelines
-
-## [0.1.0] - 2026-01-25
 
 ## [0.1.0] - 2026-01-25
 
