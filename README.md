@@ -5,8 +5,8 @@ Clone entire repositories or specific folders, keep them synced, and query them 
 
 Currently works only with Github. Future plans will include to support any Git based repository. 
 
-## Overview
 
+## Overview
 AgentsSkillVault helps you maintain a local collection of GitHub resources (repositories, folders, or files) with:
 
 - **Easy addition** - Add resources via GitHub URL
@@ -14,6 +14,8 @@ AgentsSkillVault helps you maintain a local collection of GitHub resources (repo
 - **Sync management** - Pull latest changes with one command
 - **Querying** - Filter resources by username or repository name
 - **Manifest tracking** - All resources tracked in a JSON manifest for portability
+
+Currently this has been tested on MacOS. I would assume it works on Linux. Probably it does not work on Window. 
 
 ## Installation
 
