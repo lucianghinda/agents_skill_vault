@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "open3"
+require_relative "errors/base"
 
 module AgentsSkillVault
   # Provides Git operations for cloning, syncing, and managing repositories.
@@ -139,7 +140,7 @@ module AgentsSkillVault
       def run_command(command)
         stdout, stderr, status = Open3.capture3(command)
 
-        raise Error, "Command failed: #{command}\n#{stderr}" unless status.success?
+        raise Errors::Error, "Command failed: #{command}\n#{stderr}" unless status.success?
 
         [stdout, stderr]
       end

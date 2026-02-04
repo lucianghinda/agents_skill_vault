@@ -1,3 +1,16 @@
+## [0.3.0] - 2026-02-04
+
+### Bug Fixes
+
+- **Sync works for individual skills from multi-skill repositories**
+  Previously, syncing a skill like `vault.sync("user/repo/skill-name")` would fail if the resource was added as part of a full repository. The sync operation would try to re-add the skill instead of updating it, causing a `DuplicateLabel` error. Now it correctly finds and updates existing skills.
+
+- **Legacy resources are now upgraded automatically**
+  Resources added before version 0.3.0 had `nil` values for `skill_name`. Syncing these resources now automatically fills in the missing `skill_name`, upgrading them to the current format.
+
+- **Fixed crash when adding repositories**
+  Adding a repository would crash with `uninitialized constant Errors::Error`. This was caused by a missing require statement in the git operations module. The error is now properly raised and handled.
+
 ## [0.2.0] - 2026-01-29
 
 ### Breaking Changes

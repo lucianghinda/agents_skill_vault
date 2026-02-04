@@ -108,6 +108,7 @@ module AgentsSkillVault
       def process_skill_sync(resource, skill, existing_resources)
         skill_label = "#{resource.username}/#{resource.repo}/#{skill[:skill_name]}"
         existing = existing_resources.find { |r| r.skill_name == skill[:skill_name] }
+        existing ||= existing_resources.find { |r| r.label == skill_label }
 
         if existing
           revalidate_existing_skill(resource, existing, skill)
@@ -130,7 +131,9 @@ module AgentsSkillVault
         updated = Resource.from_h(
           existing.to_h.merge(
             validation_status: result[:valid] ? :valid_skill : :invalid_skill,
-            validation_errors: result[:errors]
+            validation_errors: result[:errors],
+            skill_name: existing.skill_name || skill[:skill_name],
+            is_skill: true
           ),
           storage_path: storage_path
         )

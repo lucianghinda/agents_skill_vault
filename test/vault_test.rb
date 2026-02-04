@@ -120,6 +120,38 @@ class AgentsSkillVaultTest < Minitest::Test
     assert result.success?
   end
 
+  def test_sync_individual_skill_from_multi_skill_repo
+    stub_git_clone
+    stub_git_pull
+
+    AgentsSkillVault::SkillScanner.stubs(:scan_directory).returns([
+                                                                    {
+                                                                      relative_path: "commit-message",
+                                                                      skill_folder: "commit-message",
+                                                                      skill_name: "commit-message",
+                                                                      folder_path: "commit-message"
+                                                                    }
+                                                                  ])
+    AgentsSkillVault::SkillValidator.stubs(:validate).returns({ valid: true, errors: [] })
+
+    @vault.add("https://github.com/lucianghinda/agentic-skills")
+
+    resource = @vault.fetch("lucianghinda/agentic-skills/commit-message")
+    refute_nil resource.skill_name, "skill_name should be set"
+
+    legacy_resource = AgentsSkillVault::Resource.from_h(
+      resource.to_h.merge(skill_name: nil, is_skill: true),
+      storage_path: @storage_path
+    )
+    @vault.manifest.update_resource(legacy_resource)
+
+    result = @vault.sync("lucianghinda/agentic-skills/commit-message")
+    assert result.success?, "Sync should succeed: #{result.error}"
+
+    updated = @vault.fetch("lucianghinda/agentic-skills/commit-message")
+    assert_equal "commit-message", updated.skill_name
+  end
+
   def test_sync_all
     stub_git_clone
     stub_git_pull

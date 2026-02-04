@@ -131,7 +131,7 @@ module AgentsSkillVault
 
           resource = build_skill_resource(
             skill_label, repo_url, parsed_url, skill[:folder_path],
-            skill[:folder_path], target_path
+            skill[:folder_path], target_path, skill[:folder_path]
           )
 
           validate_and_update_resource(resource, skill[:folder_path], target_path)
