@@ -47,19 +47,40 @@ require "agents_skill_vault"
 # Create a vault in a directory
 vault = AgentsSkillVault::Vault.new(storage_path: "~/.my_vault")
 
-# Add a full repository
-vault.add("https://github.com/rails/rails")
+# Let's assume we have this Github Repo
 
-# Add a specific folder with a custom label
+# that has this organisation
+# .
+# ├── LICENSE
+#└── skills
+#    ├── commit-message
+#    │   └── SKILL.md
+#    ├── improving-testing
+#    │   └── SKILL.md
+#    └── pr-description
+#        └── SKILL.md
+
+# Add a full repository
+vault.add("https://github.com/lucianghinda/agentic-skills")
+
+# But you can also add a specific skill
+# Add a specific folder and even add a custom label
 vault.add(
-  "https://github.com/user/dotfiles/tree/main/.claude/skills/deep-research",
-  label: "deep-research"
+  "https://github.com/nateberkopec/dotfiles/tree/main/files/home/.claude/skills/readme-writer",
+  label: "readme-writer"
 )
 
 # List all resources
 vault.list.each do |resource|
   puts "#{resource.label} -> #{resource.local_path}"
 end
+
+# This will output
+
+# lucianghinda/agentic-skills/commit-message -> /Users/lucian/.my_vault/lucianghinda/agentic-skills
+# lucianghinda/agentic-skills/improving-testing -> /Users/lucian/.my_vault/lucianghinda/agentic-skills
+# lucianghinda/agentic-skills/pr-description -> /Users/lucian/.my_vault/lucianghinda/agentic-skills
+# readme-writer -> /Users/Lucian/.my_vault/nateberkopec/dotfiles/files/home/.claude/skills/readme-writer
 
 # Sync a specific resource
 result = vault.sync("rails/rails")
